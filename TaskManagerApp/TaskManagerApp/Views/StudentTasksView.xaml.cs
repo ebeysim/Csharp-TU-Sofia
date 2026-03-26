@@ -1,18 +1,14 @@
-using System.Windows.Controls;
+using System.Windows;
 using TaskManagerApp.ViewModels;
 
 namespace TaskManagerApp.Views
 {
-    public partial class StudentTasksView : UserControl
+    public partial class StudentTasksView : Window
     {
         public StudentTasksView()
         {
             InitializeComponent();
-        }
-
-        public StudentTasksView(StudentViewModel vm) : this()
-        {
-            DataContext = vm;
+            this.DataContext = new StudentViewModel();
         }
     }
 }

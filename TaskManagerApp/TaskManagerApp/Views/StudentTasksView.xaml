@@ -1,11 +1,12 @@
-<UserControl x:Class="TaskManagerApp.Views.StudentTasksView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             mc:Ignorable="d">
+<Window x:Class="TaskManagerApp.Views.StudentTasksView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        mc:Ignorable="d"
+        Title="Student Tasks" Height="600" Width="800">
     <Grid Margin="10">
         <TextBlock Text="Student Tasks" FontSize="16" FontWeight="Bold" />
         <!-- Task list and bindings would go here -->
     </Grid>
-</UserControl>
+</Window>

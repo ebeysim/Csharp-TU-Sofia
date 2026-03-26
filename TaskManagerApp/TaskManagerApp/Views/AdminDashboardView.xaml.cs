@@ -1,18 +1,15 @@
+using System.Windows;
 using System.Windows.Controls;
 using TaskManagerApp.ViewModels;
 
 namespace TaskManagerApp.Views
 {
-    public partial class AdminDashboardView : UserControl
+    public partial class AdminDashboardView : Window
     {
         public AdminDashboardView()
         {
             InitializeComponent();
-        }
-
-        public AdminDashboardView(AdminViewModel vm) : this()
-        {
-            DataContext = vm;
+            this.DataContext = new AdminViewModel();
         }
     }
 }

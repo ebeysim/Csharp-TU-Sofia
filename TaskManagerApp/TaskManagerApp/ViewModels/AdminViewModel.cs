@@ -11,6 +11,7 @@ namespace TaskManagerApp.ViewModels
 
         public AdminViewModel()
         {
+
         }
     }
 }

@@ -10,7 +10,7 @@ namespace TaskManagerApp.Models
 
         public int UserId { get; set; }
 
-        public int TaskModelId { get; set; }
+        public int TaskId { get; set; }
 
         public DateTime AssignedDate { get; set; }
 

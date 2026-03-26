@@ -1,18 +1,28 @@
-using System.Windows.Controls;
+using System.Windows;
 using TaskManagerApp.ViewModels;
 
 namespace TaskManagerApp.Views
 {
-    public partial class LoginView : UserControl
+    public partial class LoginView : Window
     {
         public LoginView()
         {
             InitializeComponent();
+            this.DataContext = new LoginViewModel();
         }
 
-        public LoginView(LoginViewModel vm) : this()
+        private void Login(object sender, RoutedEventArgs e)
         {
-            DataContext = vm;
+            try
+            {
+                var viewModel = (LoginViewModel)this.DataContext;
+                viewModel.ExecuteLogin(PasswordInput.Password);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Login error: {ex.Message}\n\n{ex.StackTrace}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
+
     }
 }

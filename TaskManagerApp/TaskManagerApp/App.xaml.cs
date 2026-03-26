@@ -4,12 +4,11 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using TaskManagerApp.Data;
 using TaskManagerApp.ViewModels;
+using System.IO;
+using System;
 
 namespace TaskManagerApp
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
     public partial class App : Application
     {
         private IHost? _host;
@@ -18,20 +17,24 @@ namespace TaskManagerApp
         {
             base.OnStartup(e);
 
+            // Get the database path consistent with AppDbContext
+            var folder = Environment.SpecialFolder.LocalApplicationData;
+            var path = Environment.GetFolderPath(folder);
+            var dbPath = Path.Join(path, "taskmanager.db");
+
             _host = Host.CreateDefaultBuilder()
                 .ConfigureServices((context, services) =>
                 {
-                    // Configure EF Core with SQLite
+                    
                     services.AddDbContext<AppDbContext>(options =>
-                        options.UseSqlite("Data Source=taskmanager.db"));
+                        options.UseSqlite($"Data Source={dbPath}"));
 
-                    // Register view models
-                    services.AddSingleton<MainWindow>();
+                    
                     services.AddTransient<LoginViewModel>();
                     services.AddTransient<AdminViewModel>();
                     services.AddTransient<StudentViewModel>();
 
-                    // Register views so DI can provide view instances with injected view models
+                  
                     services.AddTransient<Views.LoginView>();
                     services.AddTransient<Views.AdminDashboardView>();
                     services.AddTransient<Views.StudentTasksView>();
@@ -40,7 +43,7 @@ namespace TaskManagerApp
 
             _host.Start();
 
-            // Ensure database is created / migrations applied
+           
             try
             {
                 using (var scope = _host.Services.CreateScope())
@@ -54,8 +57,8 @@ namespace TaskManagerApp
                 // ignore migration errors for skeleton; in real app log or handle appropriately
             }
 
-            var mainWindow = _host.Services.GetRequiredService<MainWindow>();
-            mainWindow.Show();
+            var loginWindow = _host.Services.GetRequiredService<Views.LoginView>();
+            loginWindow.Show();
         }
 
         protected override async void OnExit(ExitEventArgs e)
