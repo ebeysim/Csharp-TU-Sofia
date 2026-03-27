@@ -48,6 +48,7 @@ namespace TaskManagerApp.ViewModels
                         userDashboard.Show();
                     }
 
+
                     // Close the login window
                     System.Windows.Application.Current.Windows
                         .OfType<LoginView>()

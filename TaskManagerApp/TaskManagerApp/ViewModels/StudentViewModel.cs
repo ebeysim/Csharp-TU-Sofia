@@ -3,6 +3,7 @@ namespace TaskManagerApp.ViewModels
     public class StudentViewModel : ViewModelBase
     {
         private string? _title = "Student Tasks";
+
         public string? Title
         {
             get => _title;

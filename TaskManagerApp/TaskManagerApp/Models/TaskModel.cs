@@ -12,7 +12,6 @@ namespace TaskManagerApp.Models
 
         public string? Description { get; set; }
 
-        // Priority enum (Low, Medium, High, etc.)
         public Priority Priority { get; set; }
 
         // Points awarded when task is completed

@@ -16,9 +16,9 @@ namespace TaskManagerApp.Models
 
         public bool IsCompleted { get; set; }
 
-        // Navigation properties
-        public User? User { get; set; }
+        //// Navigation properties
+        //public User? User { get; set; }
 
-        public TaskModel? TaskModel { get; set; }
+        //public TaskModel? TaskModel { get; set; }
     }
 }
