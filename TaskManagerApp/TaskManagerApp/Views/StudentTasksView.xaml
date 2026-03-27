@@ -6,7 +6,7 @@
         mc:Ignorable="d"
         Title="Student Tasks" Height="600" Width="800">
     <Grid Margin="10">
-        <TextBlock Text="Student Tasks" FontSize="16" FontWeight="Bold" />
+        <TextBlock Name="Title" FontSize="16" FontWeight="Bold" />
         <!-- Task list and bindings would go here -->
     </Grid>
 </Window>

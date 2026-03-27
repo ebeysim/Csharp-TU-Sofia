@@ -1,21 +1,23 @@
 using Microsoft.Win32;
 using System.Collections.ObjectModel;
 using System.Security.Cryptography.X509Certificates;
+using TaskManagerApp.Models;
 using TaskManagerApp.Models.Enums;
 
 namespace TaskManagerApp.ViewModels
 {
     public class AdminViewModel : ViewModelBase
     {
-        private string? _title = "Admin Dashboard";
+        private User _currentUser;
         public ObservableCollection<Models.User> AllUsers { get; set; } = new();
         public ObservableCollection<Models.TaskModel> AllTasks { get; set; } = new();
-        public string? Title
-        {
-            get => _title;
-            set => SetProperty(ref _title, value);
-        }
 
+        public AdminViewModel(User user)
+        {
+            _currentUser = user;
+            
+        }
+        
         public void CreateUser(string username, string password, UserRoles ur)
         {
             if (string.IsNullOrEmpty(username)) return;

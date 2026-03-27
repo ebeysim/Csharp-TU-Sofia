@@ -10,7 +10,7 @@
         <TextBlock Text="Password" FontSize="14" FontWeight="Bold" />
         <PasswordBox x:Name="PasswordInput" Height="35" Padding="10" FontSize="12" />
 
-        <Button Content="Login" Click="Login" Height="40" Margin="0,10,0,0" FontSize="14" />
+        <Button Content="Login" Click="Login_Click" Height="40" Margin="0,10,0,0" FontSize="14" />
 
         <Label Content="{Binding ErrorMessage}" Foreground="Red" FontSize="12" />
     </StackPanel>

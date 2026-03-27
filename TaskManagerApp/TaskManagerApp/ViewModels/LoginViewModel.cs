@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Windows.Controls;
 using TaskManagerApp.Data;
+using TaskManagerApp.Models;
 using TaskManagerApp.Models.Enums;
 using TaskManagerApp.Views;
 
@@ -39,12 +40,12 @@ namespace TaskManagerApp.ViewModels
                     // Open the appropriate dashboard
                     if (user.Role == UserRoles.Admin)
                     {
-                        var adminDashboard = new AdminDashboardView();
+                        var adminDashboard = new AdminDashboardView(user);
                         adminDashboard.Show();
                     }
                     else
                     {
-                        var userDashboard = new StudentTasksView();
+                        var userDashboard = new StudentTasksView(user);
                         userDashboard.Show();
                     }
 

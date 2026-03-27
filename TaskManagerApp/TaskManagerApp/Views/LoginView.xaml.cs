@@ -11,7 +11,7 @@ namespace TaskManagerApp.Views
             this.DataContext = new LoginViewModel();
         }
 
-        private void Login(object sender, RoutedEventArgs e)
+        private void Login_Click(object sender, RoutedEventArgs e)
         {
             try
             {
