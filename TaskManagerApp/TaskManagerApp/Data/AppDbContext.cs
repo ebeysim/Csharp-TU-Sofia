@@ -9,7 +9,7 @@ namespace TaskManagerApp.Data
     public class AppDbContext : DbContext
     {
         public DbSet<User> Users { get; set; } = null!;
-        public DbSet<TaskModel> Tasks { get; set; } = null!;
+        public DbSet<Models.Task> Tasks { get; set; } = null!;
         public DbSet<UserTaskAssignment> UserTaskAssignments { get; set; } = null!;
 
         public string DbPath { get; }

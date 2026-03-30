@@ -8,15 +8,12 @@ namespace TaskManagerApp.ViewModels
 {
     public class AdminViewModel : ViewModelBase
     {
-        private User _currentUser;
-        public ObservableCollection<Models.User> AllUsers { get; set; } = new();
-        public ObservableCollection<Models.TaskModel> AllTasks { get; set; } = new();
+        //private User _currentUser;
+        public ObservableCollection<User> AllUsers { get; set; } = new();
+        public ObservableCollection<Models.Task> AllTasks { get; set; } = new();
 
-        public AdminViewModel(User user)
-        {
-            _currentUser = user;
-            
-        }
+        public AdminViewModel(User currentUser)
+        { }
         
         public void CreateUser(string username, string password, UserRoles ur)
         {
@@ -62,7 +59,7 @@ namespace TaskManagerApp.ViewModels
             if (pointValue < 0) return;
             using (var db = new Data.AppDbContext())
             {
-                var newTask = new Models.TaskModel
+                var newTask = new Models.Task
                 {
                     Title = title,
                     Description = description,
