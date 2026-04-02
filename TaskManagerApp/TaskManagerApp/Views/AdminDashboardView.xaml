@@ -4,6 +4,7 @@
         xmlns:viewmodels="clr-namespace:TaskManagerApp.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:converters="clr-namespace:TaskManagerApp.Converters"
         xmlns:local="clr-namespace:TaskManagerApp.Views"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=viewmodels:AdminViewModel}"
@@ -12,6 +13,7 @@
 
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+        <converters:PriorityToColorConverter x:Key="PriorityToColorConverter"/>
     </Window.Resources>
 
     <Grid>
@@ -37,10 +39,8 @@
                           SelectedValue="{Binding SelectedFilter}"
                           SelectedValuePath="Content">
                     <ComboBoxItem Content="All"/>
-                    <ComboBoxItem Content="Pending"/>
-                    <ComboBoxItem Content="Active"/>
                     <ComboBoxItem Content="Completed"/>
-                    <ComboBoxItem Content="Rejected"/>
+                    <ComboBoxItem Content="Not Completed"/>
                 </ComboBox>
 
                 <Separator Margin="0,20" Background="#34495E"/>
@@ -53,15 +53,15 @@
 
         <!-- 2. TASK LIST (The "Master" part) -->
         <Grid Grid.Column="1" Background="White">
-            <ListView ItemsSource="{Binding VisibleTasks}" 
+            <ListView ItemsSource="{Binding AllTasks}" 
                       SelectedItem="{Binding SelectedTask}"
                       BorderThickness="0" Margin="5">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Margin="5">
-                            <TextBlock Text="{Binding Title}" FontWeight="Bold" FontSize="14"/>
-                            <TextBlock Text="{Binding Username}" Foreground="Gray"/>
-                            <TextBlock Text="{Binding Status}" FontSize="10" FontStyle="Italic"/>
+                            <TextBlock Text="{Binding TaskModel.Title}" FontWeight="Bold" FontSize="14"/>
+                            <TextBlock Text="{Binding User.Username}" Foreground="Gray"/>
+                            <TextBlock Text="{Binding TaskModel.Priority}" Foreground="{Binding TaskModel.Priority, Converter={StaticResource PriorityToColorConverter}}" FontSize="10" FontStyle="Italic"/>
                         </StackPanel>
                     </DataTemplate>
                 </ListView.ItemTemplate>
@@ -71,25 +71,33 @@
         <!-- 3. DETAILS PANE (The "Detail" part) -->
         <Border Grid.Column="2" BorderBrush="#DCDDE1" BorderThickness="1,0" Padding="20">
             <!-- This section only shows its content if a task is selected -->
-            <Grid Visibility="{Binding SelectedTask, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Collapsed}">
+            <Grid DataContext ="{Binding SelectedTask}"  Visibility="{Binding SelectedTask, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Collapsed}">
                 <StackPanel>
                     <TextBlock Text="Task Review" FontSize="20" FontWeight="Bold" Margin="0,0,0,10"/>
                     <Separator/>
 
                     <Label Content="Task Title:" Foreground="Gray" Margin="0,10,0,0"/>
-                    <TextBlock Text="{Binding SelectedTask.Title}" FontSize="16" FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding TaskModel.Title}" FontSize="16" FontWeight="SemiBold"/>
 
                     <Label Content="Description:" Foreground="Gray" Margin="0,10,0,0"/>
-                    <TextBlock Text="{Binding SelectedTask.Description}" TextWrapping="Wrap" Margin="0,0,0,20"/>
+                    <TextBlock Text="{Binding TaskModel.Description}" TextWrapping="Wrap" Margin="0,0,0,20"/>
 
-                    <Label Content="Reward Points:" Foreground="Gray"/>
-                    <TextBlock Text="{Binding SelectedTask.Points}" FontWeight="Bold" Foreground="Green"/>
+
+                    <Label Content="Assigned User:" Foreground="Gray" Margin="0,10,0,0"/>
+                    <TextBlock Text="{Binding User.Username}" TextWrapping="Wrap" Margin="0,0,0,20"/>
+
+                    <Label Content="Assigned Date:" Foreground="Gray" Margin="0,10,0,0"/>
+                    <TextBlock Text="{Binding AssignedDate}" TextWrapping="Wrap" Margin="0,0,0,20"/>
+
+                    <Label Content="Status:" Foreground="Gray" Margin="0,10,0,0"/>
+                    <TextBlock Text="{Binding IsCompleted}" TextWrapping="Wrap" Margin="0,0,0,20"/>
+
 
                     <!-- Action Buttons -->
-                    <StackPanel Orientation="Horizontal" Margin="0,30,0,0">
-                        <Button Content="Approve" Command="{Binding ApproveCommand}" 
+                    <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+                        <Button Content="Approve" Click="Approve_Click" 
                                 Width="100" Height="35" Background="#27AE60" Foreground="White" Margin="0,0,10,0"/>
-                        <Button Content="Reject" Command="{Binding RejectCommand}" 
+                        <Button Content="Delete Task" Click="DeleteTask_Click" 
                                 Width="100" Height="35" Background="#C0392B" Foreground="White"/>
                     </StackPanel>
                 </StackPanel>
@@ -136,8 +144,8 @@
             <Border Background="Black" Opacity="0.6"/>
             <local:CreateTaskView x:Name="CreateTaskPopup"
                 Grid.Row="0"
-                Width="400"
-                Height="350"
+                Width="543"
+                Height="555"
                 VerticalAlignment="Center" 
                 HorizontalAlignment="Center"/>
         </Grid>

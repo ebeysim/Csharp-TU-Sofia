@@ -12,10 +12,10 @@ namespace TaskManagerApp.Views
         public AdminDashboardView(User user)
         {
             InitializeComponent();
-           
+
             Title.Text = $"Welcome {user.Username}";
             this.DataContext = new AdminViewModel(user);
-            
+
             CreateUserPopup.OnClose += () =>
             {
                 UserOverlay.Visibility = Visibility.Collapsed;
@@ -26,6 +26,9 @@ namespace TaskManagerApp.Views
                 TaskOverlay.Visibility = Visibility.Collapsed;
 
             };
+            var vm = (AdminViewModel)this.DataContext;
+            vm.getTasks();
+
         }
         private void OpenCreateUser_Click(object sender, RoutedEventArgs e)
         {
@@ -34,6 +37,8 @@ namespace TaskManagerApp.Views
         }
         private void OpenCreateTask_Click(object sender, RoutedEventArgs e)
         {
+            var vm = (AdminViewModel)this.DataContext;
+            vm.getStudents();
             TaskOverlay.Visibility = Visibility.Visible;
         }
         private void Logout_Click(object sender, RoutedEventArgs e)
@@ -49,6 +54,39 @@ namespace TaskManagerApp.Views
 
                 // 3. Close THIS window (This kills the reference to the current User)
                 this.Close();
+            }
+        }
+
+        private void Approve_Click(object sender, RoutedEventArgs e)
+        {
+            var vm = (AdminViewModel)this.DataContext;
+            if (vm.SelectedTask == null)
+            {
+                MessageBox.Show("Please select a task to approve.");
+                return;
+            }
+            var result = MessageBox.Show($"Are you sure you want to delete the task '{vm.SelectedTask.TaskModel.Title}'?", "Delete Task",
+                                 MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (result == MessageBoxResult.Yes)
+            {
+                vm.ApproveTask(vm.SelectedTask.Id);
+            }
+
+        }
+        private void DeleteTask_Click(object sender, RoutedEventArgs e)
+        {
+            //MessageBox.Show("Delete Task Clicked");
+            var vm = (AdminViewModel)this.DataContext;
+            if (vm.SelectedTask == null)
+            {
+                MessageBox.Show("Please select a task to delete.");
+                return;
+            }
+            var result = MessageBox.Show($"Are you sure you want to delete the task '{vm.SelectedTask.TaskModel.Title}'?", "Delete Task",
+                                 MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (result == MessageBoxResult.Yes)
+            {
+                vm.DeleteTask(vm.SelectedTask.TaskId, vm.SelectedTask.UserId);
             }
         }
     }

@@ -19,6 +19,6 @@ namespace TaskManagerApp.Models
         // Navigation properties
         public User? User { get; set; }
 
-        public TaskModel? TaskModel { get; set; }
+        public Task? TaskModel { get; set; }
     }
 }

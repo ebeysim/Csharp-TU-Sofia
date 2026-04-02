@@ -21,7 +21,6 @@ namespace TaskManagerApp.Views
         public CreateUserView(){
             InitializeComponent();
         }
-        // A simple event to tell the AdminDashboard to hide this control
         public event Action OnClose;
 
         public void Submit_Click(object sender, RoutedEventArgs e)
@@ -32,6 +31,8 @@ namespace TaskManagerApp.Views
             {
                 vm.CreateUser(UsernameBox.Text, PasswordBox.Password, UserRoles.Student);
                 MessageBox.Show("Student Created!");
+                UsernameBox.Text = string.Empty;
+                PasswordBox.Clear();
                 OnClose?.Invoke();
             }
         }

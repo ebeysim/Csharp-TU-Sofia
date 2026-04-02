@@ -3,7 +3,7 @@ using TaskManagerApp.Models.Enums;
 
 namespace TaskManagerApp.Models
 {
-    public class TaskModel
+    public class Task
     {
         [Key]
         public int Id { get; set; }

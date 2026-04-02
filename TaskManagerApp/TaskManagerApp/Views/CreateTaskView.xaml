@@ -3,19 +3,53 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:TaskManagerApp.Views"
-             mc:Ignorable="d" 
-             d:DesignHeight="400" d:DesignWidth="350"
-             Width="350" Height="300">
+             xmlns:local="clr-namespace:TaskManagerApp.Views" xmlns:viewmodels="clr-namespace:TaskManagerApp.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:AdminViewModel}"
+             mc:Ignorable="d"
+             Width="543" Height="555">
+
     <Border Background="White" CornerRadius="15" BorderBrush="#DCDDE1" BorderThickness="1">
         <Border.Effect>
-            <DropShadowEffect BlurRadius="15" Opacity="0.3"/>
+            <DropShadowEffect BlurRadius="15" Opacity="0.2"/>
         </Border.Effect>
-        <Grid>
-            <TextBlock Text="Create New Task" FontSize="22" FontWeight="Bold" Margin="0,0,0,20" HorizontalAlignment="Center"/>
-            <Button Content="Cancel" Click="Cancel_Click" 
-         Background="Transparent" Foreground="Gray" BorderThickness="0" Margin="0,10,0,0"/>
-        </Grid>
+
+        <StackPanel Margin="25">
+            <TextBlock Text="Create &amp; Assign Task" FontSize="22" FontWeight="Bold" Margin="0,0,0,20" HorizontalAlignment="Center"/>
+
+            <Label Content="Task Title" Foreground="Gray"/>
+            <TextBox x:Name="TitleBox" Height="30" Margin="0,0,0,10"/>
+
+            <Label Content="Description" Foreground="Gray"/>
+            <TextBox x:Name="DescBox" Height="50" Margin="0,0,0,10" TextWrapping="Wrap" AcceptsReturn="True"/>
+
+            <Label Content="Priority (Points assigned automatically)" Foreground="Gray"/>
+            <ComboBox x:Name="PriorityCombo" Height="30" Margin="0,0,0,15">
+                <ComboBoxItem Content="Low" IsSelected="True"/>
+                <ComboBoxItem Content="Medium"/>
+                <ComboBoxItem Content="High"/>
+                <ComboBoxItem Content="Critical"/>
+            </ComboBox>
+
+            <!-- NEW: USER ASSIGNMENT SECTION -->
+            <Label Content="Assign to Students:" Foreground="Gray"/>
+            <Border BorderBrush="#DCDDE1" BorderThickness="1" Height="100">
+                <ListBox x:Name="UserSelectionList" 
+                 ItemsSource="{Binding AllStudents}" 
+                 SelectionMode="Multiple">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <CheckBox Content="{Binding Username}" 
+                              IsChecked="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" 
+                              VerticalAlignment="Center"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Border>
+
+            <Button Content="Create &amp; Assign" Click="SaveTask_Click" 
+            Background="#2980B9" Foreground="White" Height="40" FontWeight="Bold" Margin="0,20,0,0"/>
+
+            <Button Content="Cancel" Click="Cancel_Click" Background="Transparent" BorderThickness="0" Margin="0,5,0,0"/>
+        </StackPanel>
     </Border>
-   
+
 </UserControl>

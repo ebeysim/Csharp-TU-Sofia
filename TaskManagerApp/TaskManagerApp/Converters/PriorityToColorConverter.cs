@@ -16,7 +16,7 @@ namespace TaskManagerApp.Converters
                 return priority switch
                 {
                     Priority.Low => Brushes.LightGreen,
-                    Priority.Medium => Brushes.LightYellow,
+                    Priority.Medium => Brushes.GreenYellow,
                     Priority.High => Brushes.Orange,
                     Priority.Critical => Brushes.Red,
                     _ => Brushes.Transparent
