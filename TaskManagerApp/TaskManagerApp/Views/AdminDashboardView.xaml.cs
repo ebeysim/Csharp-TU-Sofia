@@ -73,6 +73,7 @@ namespace TaskManagerApp.Views
             }
 
         }
+
         private void DeleteTask_Click(object sender, RoutedEventArgs e)
         {
             //MessageBox.Show("Delete Task Clicked");

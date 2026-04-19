@@ -1,26 +1,38 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Win32;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Security.Cryptography.X509Certificates;
 using System.Windows;
+using System.Windows.Data;
 using TaskManagerApp.Data;
 using TaskManagerApp.Models;
 using TaskManagerApp.Models.Enums;
+using TaskManagerApp.Views;
 
 namespace TaskManagerApp.ViewModels
 {
     public class AdminViewModel : ViewModelBase
     {
-        //private User _currentUser;
         public ObservableCollection<User> AllStudents { get; set; } = new();
         public ObservableCollection<UserTaskAssignment> AllTasks { get; set; } = new();
         public ObservableCollection<User> TopUsers { get; set; } = new();
+
+        public ICollectionView TaskView { get; set; }
+
 
         private string _selectedFilter = "All";
         public string SelectedFilter
         {
             get => _selectedFilter;
-            set => SetProperty(ref _selectedFilter, value);
+            set{
+
+                if (SetProperty(ref _selectedFilter, value))
+                {
+                    // IMPORTANT: Refresh the filter when the dropdown changes
+                    TaskView?.Refresh();
+                }
+            }
         }
 
         private UserTaskAssignment _selectedTask;
@@ -30,18 +42,39 @@ namespace TaskManagerApp.ViewModels
             set
             {
                 SetProperty(ref _selectedTask, value);
-
             }
         }
 
         public AdminViewModel(User currentUser)
         {
-            // Load initial data
+            TaskView = CollectionViewSource.GetDefaultView(AllTasks);
+            InitializeFiltering();
             getTasks();
             getStudents();
             LoadTopUsers();
+            
         }
-        
+        private void InitializeFiltering()
+        {
+            if (TaskView == null) return;
+
+            TaskView.Filter = (obj) =>
+            {
+                // If "All" is selected, don't hide anything
+                if (string.IsNullOrEmpty(SelectedFilter) || SelectedFilter == "All")
+                    return true;
+
+                if (obj is UserTaskAssignment item)
+                {
+                    // Convert the UI string back to your Enum for a type-safe check
+                    if (Enum.TryParse(SelectedFilter, out Priority filterEnum))
+                    {
+                        return item.TaskModel.Priority == filterEnum;
+                    }
+                }
+                return false;
+            };
+        }
         public void CreateUser(string username, string password, UserRoles ur)
         {
             if (string.IsNullOrEmpty(username)) return;

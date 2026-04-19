@@ -39,8 +39,10 @@
                           SelectedValue="{Binding SelectedFilter}"
                           SelectedValuePath="Content">
                     <ComboBoxItem Content="All"/>
-                    <ComboBoxItem Content="Completed"/>
-                    <ComboBoxItem Content="Not Completed"/>
+                    <ComboBoxItem Content="Low"/>
+                    <ComboBoxItem Content="Medium"/>
+                    <ComboBoxItem Content="High"/>
+                    <ComboBoxItem Content="Critical"/>
                 </ComboBox>
 
                 <Separator Margin="0,20" Background="#34495E"/>
@@ -53,7 +55,7 @@
 
         <!-- 2. TASK LIST (The "Master" part) -->
         <Grid Grid.Column="1" Background="White">
-            <ListView ItemsSource="{Binding AllTasks}" 
+            <ListView ItemsSource="{Binding TaskView}" 
                       SelectedItem="{Binding SelectedTask}"
                       BorderThickness="0" Margin="5">
                 <ListView.ItemTemplate>
