@@ -16,9 +16,7 @@ using TaskManagerApp.ViewModels;
 
 namespace TaskManagerApp.Views
 {
-    /// <summary>
-    /// Interaction logic for CreateTaskView.xaml
-    /// </summary>
+ 
     public partial class CreateTaskView : UserControl
     {
         public CreateTaskView()
@@ -46,7 +44,7 @@ namespace TaskManagerApp.Views
                 Description = DescBox.Text,
                 Priority = selectedPriority,
             };
-            // 3. Send everything to the ViewModel to save to DB
+           
             var vm = (AdminViewModel)this.DataContext;
             vm.CreateTask(newTask);
 
@@ -56,7 +54,7 @@ namespace TaskManagerApp.Views
             }
             TitleBox.Text = String.Empty;
             DescBox.Text = String.Empty;
-            // 4. Close the popup
+           
             OnClose?.Invoke();
         }
         

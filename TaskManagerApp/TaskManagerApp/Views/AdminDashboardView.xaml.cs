@@ -60,11 +60,11 @@ namespace TaskManagerApp.Views
 
             if (result == MessageBoxResult.Yes)
             {
-                // 2. Create and show the Login window
-                var loginWindow = new LoginView(); // Or whatever your login class is named
+             
+                var loginWindow = new LoginView(); 
                 loginWindow.Show();
 
-                // 3. Close THIS window (This kills the reference to the current User)
+              
                 this.Close();
             }
         }
@@ -77,18 +77,18 @@ namespace TaskManagerApp.Views
                 MessageBox.Show("Please select a task to approve.");
                 return;
             }
-            var result = MessageBox.Show($"Are you sure you want to delete the task '{vm.SelectedTask.TaskModel.Title}'?", "Delete Task",
+            var result = MessageBox.Show($"Are you sure you want to give points to the {vm.SelectedTask.User.Username} and delete the task '{vm.SelectedTask.TaskModel.Title}'?", "Delete Task",
                                  MessageBoxButton.YesNo, MessageBoxImage.Warning);
             if (result == MessageBoxResult.Yes)
             {
-                vm.ApproveTask(vm.SelectedTask.Id);
+                vm.ApproveTask(vm.SelectedTask.TaskId, vm.SelectedTask.UserId);
             }
 
         }
 
         private void DeleteTask_Click(object sender, RoutedEventArgs e)
         {
-            //MessageBox.Show("Delete Task Clicked");
+           
             var vm = (AdminViewModel)this.DataContext;
             if (vm.SelectedTask == null)
             {

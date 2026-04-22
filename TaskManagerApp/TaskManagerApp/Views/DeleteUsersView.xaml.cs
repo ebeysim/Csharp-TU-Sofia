@@ -16,9 +16,7 @@ using TaskManagerApp.ViewModels;
 
 namespace TaskManagerApp.Views
 {
-    /// <summary>
-    /// Interaction logic for DeleteUsersView.xaml
-    /// </summary>
+    
     public partial class DeleteUsersView : UserControl
     {
         public DeleteUsersView()

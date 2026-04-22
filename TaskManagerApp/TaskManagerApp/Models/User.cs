@@ -7,7 +7,7 @@ namespace TaskManagerApp.Models
     {
         [Key]
         public int Id { get; set; }
-        public string Username { get; set; } // This is now your unique login ID
+        public string Username { get; set; }
         public string PasswordHash { get; set; }
         public UserRoles Role { get; set; }
         public int TotalPoints { get; set; }

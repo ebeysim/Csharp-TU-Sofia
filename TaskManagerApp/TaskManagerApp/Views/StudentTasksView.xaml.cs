@@ -22,11 +22,11 @@ namespace TaskManagerApp.Views
 
             if (result == MessageBoxResult.Yes)
             {
-                // 2. Create and show the Login window
-                var loginWindow = new LoginView(); // Or whatever your login class is named
+                
+                var loginWindow = new LoginView(); 
                 loginWindow.Show();
 
-                // 3. Close THIS window (This kills the reference to the current User)
+             
                 this.Close();
             }
         }

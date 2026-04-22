@@ -14,7 +14,6 @@ namespace TaskManagerApp.Data
 
         public string DbPath { get; }
 
-        // 1. This is the "Mailbox" constructor EF was asking for
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
             var folder = Environment.SpecialFolder.LocalApplicationData;

@@ -14,7 +14,6 @@ namespace TaskManagerApp.Models
 
         public Priority Priority { get; set; }
 
-        // Points awarded when task is completed
         public int PointValue { get; set; }
     }
 }

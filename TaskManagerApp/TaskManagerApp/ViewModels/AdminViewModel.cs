@@ -59,13 +59,13 @@ namespace TaskManagerApp.ViewModels
 
             TaskView.Filter = (obj) =>
             {
-                // If "All" is selected, don't hide anything
+               
                 if (string.IsNullOrEmpty(SelectedFilter) || SelectedFilter == "All")
                     return true;
 
                 if (obj is UserTaskAssignment item)
                 {
-                    // Convert the UI string back to your Enum for a type-safe check
+                    
                     if (Enum.TryParse(SelectedFilter, out Priority filterEnum))
                     {
                         return item.TaskModel.Priority == filterEnum;
@@ -235,88 +235,11 @@ namespace TaskManagerApp.ViewModels
                 }
                 db.SaveChanges();
             }
-
-            // 4. Update the UI Collection (Thread-Safe)
-            App.Current.Dispatcher.Invoke(() =>
-            {
-                var itemInList = AllTasks.FirstOrDefault(t => t.TaskId == taskId && t.UserId == studentId);
-
-                if (itemInList != null)
-                {
-                    AllTasks.Remove(itemInList);
-                }
-                SelectedTask = null;
-            });
+            getTasks();
         }
 
-        public void UpdateTaskView(int id)
-        {
-            App.Current.Dispatcher.Invoke(() =>
-            {
-                var itemInList = AllTasks.FirstOrDefault(t => t.Id == id);
-                if (itemInList != null)
-                {
-                    AllTasks.Remove(itemInList);
-                }
-                SelectedTask = null;
-            });
-        }
+  
 
-        public void DeleteTask(int assignmentId)
-        {
-            using (var db = new Data.AppDbContext())
-            {
-                var assignment = db.UserTaskAssignments
-                    .Include(a => a.TaskModel)
-                    .FirstOrDefault(a => a.Id == assignmentId);
-
-                if (assignment == null) return;
-
-                int taskId = assignment.TaskId;
-
-                db.UserTaskAssignments.Remove(assignment);
-
-                bool otherStudentsHaveThisTask = db.UserTaskAssignments
-                    .Any(t => t.TaskId == taskId && t.Id != assignmentId);
-
-                if (!otherStudentsHaveThisTask)
-                {
-                    var taskTemplate = db.Tasks.Find(taskId);
-                    if (taskTemplate != null)
-                    {
-                        db.Tasks.Remove(taskTemplate);
-                    }
-                }
-                db.SaveChanges();
-            }
-            UpdateTaskView(assignmentId);
-        }
-
-      
-
-        public void ApproveTask(int assignmentId)
-        {
-            using (var db = new Data.AppDbContext())
-            {
-                // 1. Fetch the assignment with the Task details for points
-                var assignment = db.UserTaskAssignments
-                    .Include(a => a.TaskModel)
-                    .FirstOrDefault(t => t.Id == assignmentId);
-
-                if (assignment == null) return;
-
-                var user = db.Users.Find(assignment.UserId);
-                if (user != null)
-                {
-                    user.TotalPoints += assignment.TaskModel.PointValue;
-                }
-                db.UserTaskAssignments.Remove(assignment);
-                db.SaveChanges();
-
-               UpdateTaskView(assignmentId);
-                LoadTopUsers();
-            }
-        }
 
         public void LoadTopUsers()
         {
@@ -338,5 +261,30 @@ namespace TaskManagerApp.ViewModels
                 });
             }
         }
+
+        public void ApproveTask(int taskId, int studentId)
+        {
+            using (var db = new Data.AppDbContext())
+            {
+                var assignment = db.UserTaskAssignments
+                    .Include(a => a.TaskModel)
+                    .FirstOrDefault(t => t.TaskId == taskId && t.UserId == studentId);
+
+                if (assignment == null) return;
+
+                var user = db.Users.Find(assignment.UserId);
+                if (user != null)
+                {
+                    user.TotalPoints += assignment.TaskModel.PointValue;
+                }
+                DeleteTask(taskId, studentId);
+                db.SaveChanges();
+
+                getTasks();
+                LoadTopUsers();
+            }
+        }
+
+        
     }
 }
