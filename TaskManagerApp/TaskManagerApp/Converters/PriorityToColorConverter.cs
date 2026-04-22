@@ -11,14 +11,15 @@ namespace TaskManagerApp.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            var bc = new BrushConverter();
             if (value is Priority priority)
             {
                 return priority switch
                 {
-                    Priority.Low => Brushes.LightGreen,
-                    Priority.Medium => Brushes.GreenYellow,
-                    Priority.High => Brushes.Orange,
-                    Priority.Critical => Brushes.Red,
+                    Priority.Low => (Brush)bc.ConvertFrom("#27AE60"),
+                    Priority.Medium => (Brush)bc.ConvertFrom("#F1C40F"),
+                    Priority.High => (Brush)bc.ConvertFrom("#E67E22"),
+                    Priority.Critical => (Brush)bc.ConvertFrom("#C0392B"),
                     _ => Brushes.Transparent
                 };
             }

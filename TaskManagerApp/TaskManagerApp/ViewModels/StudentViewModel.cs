@@ -9,6 +9,7 @@ namespace TaskManagerApp.ViewModels
     public class StudentViewModel : ViewModelBase
     {
         public ObservableCollection<UserTaskAssignment> MyTasks { get; set; } = new();
+        public User currentUser;
         private bool _isCompleted;
         public bool IsCompleted
         {
@@ -39,79 +40,76 @@ namespace TaskManagerApp.ViewModels
             }
         }
 
-        public StudentViewModel(User currentUser)
+        public StudentViewModel(User cU)
         {
+            this.currentUser = cU;
             getMyTasks(currentUser.Id);
             TotalPoints = currentUser.TotalPoints;
-            //ClearAllAssignments();
         }
 
         public void getMyTasks(int userId)
         {
-            using (var db = new AppDbContext())
+            try
             {
-
-                var tasks = db.UserTaskAssignments
-                    .Where(uta => uta.UserId == userId)
-                    .Include(t => t.TaskModel)
-                    .OrderBy(t => t.IsCompleted)
-                    .ThenByDescending(t => t.TaskModel.Priority)
-                    .ThenByDescending(t => t.AssignedDate)
-                    .ToList();
-
-                App.Current.Dispatcher.Invoke(() =>
+                using (var db = new AppDbContext())
                 {
-                    MyTasks.Clear();
-                    foreach (var t in tasks)
-                    {
-                        MyTasks.Add(t);
-                    }
-                });
-                //MessageBox.Show($"Loaded {MyTasks.Count} tasks!");
 
+                    var tasks = db.UserTaskAssignments
+                        .Where(uta => uta.UserId == userId)
+                        .Include(t => t.TaskModel)
+                        .OrderBy(t => t.IsCompleted)
+                        .ThenByDescending(t => t.TaskModel.Priority)
+                        .ThenByDescending(t => t.AssignedDate)
+                        .ToList();
+
+                    App.Current.Dispatcher.Invoke(() =>
+                    {
+                        MyTasks.Clear();
+                        foreach (var t in tasks)
+                        {
+                            MyTasks.Add(t);
+                        }
+                    });
+                }
+                //MessageBox.Show($"Loaded {MyTasks.Count} tasks!");
+            }
+            catch (Exception ex) {
+                MessageBox.Show($"Error loading tasks: {ex.Message}");
             }
         }
 
        
         public void MarkComplete(UserTaskAssignment taskAssignment)
         {
-            using (var db = new AppDbContext()) // Fresh connection
+            try
             {
-                // Fetch fresh from disk
-                var assignmentInDb = db.UserTaskAssignments
-                    .Include(a => a.TaskModel)
-                    .FirstOrDefault(a => a.Id == taskAssignment.Id);
-
-                if (assignmentInDb == null) return;
-
-                var userInDb = db.Users.Find(assignmentInDb.UserId);
-                if (userInDb != null)
+                using (var db = new AppDbContext())
                 {
-                    userInDb.TotalPoints += assignmentInDb.TaskModel.PointValue;
-                    this.TotalPoints = userInDb.TotalPoints;
+                    // Fetch fresh from disk
+                    var assignmentInDb = db.UserTaskAssignments
+                        .Include(a => a.TaskModel)
+                        .FirstOrDefault(a => a.Id == taskAssignment.Id);
+
+                    if (assignmentInDb == null) return;
+
+                    var userInDb = db.Users.Find(currentUser.Id);
+                    if (userInDb != null)
+                    {
+                        userInDb.TotalPoints += assignmentInDb.TaskModel.PointValue;
+                        this.TotalPoints = userInDb.TotalPoints;
 
 
-                    db.UserTaskAssignments.Remove(assignmentInDb);
-                    db.SaveChanges(); // Commits to the actual .db file
+                        db.UserTaskAssignments.Remove(assignmentInDb);
+                        db.SaveChanges();
+                    }
                 }
+            }catch (Exception ex)
+            {
+                MessageBox.Show($"Error marking task complete: {ex.Message}");
+                return;
             }
 
             getMyTasks(taskAssignment.UserId);
-        }
-
-        public void ClearAllAssignments()
-        {
-            using (var db = new AppDbContext())
-            {
-                var allAssignments = db.UserTaskAssignments.ToList();
-                var allTasks = db.Tasks.ToList();
-                db.UserTaskAssignments.RemoveRange(allAssignments);
-                db.Tasks.RemoveRange(allTasks);
-
-                db.SaveChanges();
-            }
-
-            App.Current.Dispatcher.Invoke(() => MyTasks.Clear());
         }
     }
     

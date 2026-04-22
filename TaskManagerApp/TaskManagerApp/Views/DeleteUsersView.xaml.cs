@@ -47,6 +47,7 @@ namespace TaskManagerApp.Views
                     vm.DeleteUser(student.Id);
                 }
             }
+            OnClose?.Invoke();
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e) => OnClose?.Invoke();

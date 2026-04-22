@@ -54,7 +54,7 @@
         </Border>
 
         <!-- 2. TASK LIST (The "Master" part) -->
-        <Grid Grid.Column="1" Background="White">
+        <Grid Grid.Column="1" Background="#F5F6FA">
             <ListView ItemsSource="{Binding TaskView}" 
                       SelectedItem="{Binding SelectedTask, Mode=TwoWay}"
                       SelectionMode="Single"
@@ -73,7 +73,6 @@
 
         <!-- 3. DETAILS PANE (The "Detail" part) -->
         <Border Grid.Column="2" BorderBrush="#DCDDE1" BorderThickness="1,0" Padding="20">
-            <!-- This section only shows its content if a task is selected -->
             <Grid DataContext ="{Binding SelectedTask}">
                 <StackPanel>
                     <TextBlock Text="Task Review" FontSize="20" FontWeight="Bold" Margin="0,0,0,10"/>

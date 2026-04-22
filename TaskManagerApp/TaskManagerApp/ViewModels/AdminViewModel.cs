@@ -9,7 +9,6 @@ using TaskManagerApp.Data;
 using TaskManagerApp.Models;
 using TaskManagerApp.Models.Enums;
 using TaskManagerApp.Views;
-
 namespace TaskManagerApp.ViewModels
 {
     public class AdminViewModel : ViewModelBase
@@ -74,95 +73,134 @@ namespace TaskManagerApp.ViewModels
                 return false;
             };
         }
-        public void CreateUser(string username, string password, UserRoles ur)
+        public void CreateStudent(string username, string password, UserRoles ur)
         {
             if (string.IsNullOrEmpty(username)) return;
             if (string.IsNullOrEmpty(password)) return;
 
-            using (var db = new Data.AppDbContext())
+            try
             {
-                if (db.Users.Any(u => u.Username == username))
+                using (var db = new Data.AppDbContext())
                 {
-                    return;
+                    if (db.Users.Any(u => u.Username == username))
+                    {
+                        return;
+                    }
+                    var newUser = new User
+                    {
+                        Username = username,
+                        PasswordHash = BCrypt.Net.BCrypt.HashPassword(password),
+                        Role = ur
+                    };
+                    db.Users.Add(newUser);
+                    db.SaveChanges();
+                    AllStudents.Add(newUser);
                 }
-                var newUser = new User
-                {
-                    Username = username,
-                    PasswordHash = BCrypt.Net.BCrypt.HashPassword(password),
-                    Role = ur
-                };
-                db.Users.Add(newUser);
-                db.SaveChanges();
-                AllStudents.Add(newUser);
+            }catch (Exception ex) {
+                MessageBox.Show($"Error creating user: {ex.Message}"); return;
             }
-
         }
         public void getStudents()
         {
-            using (var db = new AppDbContext())
+            try
             {
-                var students = db.Users.Where(u => u.Role == UserRoles.Student).ToList();
-
-                App.Current.Dispatcher.Invoke(() =>
+                using (var db = new AppDbContext())
                 {
-                    AllStudents.Clear();
-                    foreach (var s in students)
+                    var students = db.Users.Where(u => u.Role == UserRoles.Student).ToList();
+
+                    App.Current.Dispatcher.Invoke(() =>
                     {
-                        AllStudents.Add(s);
-                    }
-                });
+                        AllStudents.Clear();
+                        foreach (var s in students)
+                        {
+                            AllStudents.Add(s);
+                        }
+                    });
+                }
+            }catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading students: {ex.Message}");
+                return;
             }
             //MessageBox.Show($"Loaded {AllStudents.Count} students!");
         }
+
+        //public async System.Threading.Tasks.Task getStudentsAsync()
+        //{
+        //    using (var db = new AppDbContext())
+        //    {
+        //        var students = await db.Users.Where(u => u.Role == UserRoles.Student).ToListAsync();
+        //        AllStudents.Clear();
+        //        foreach (var s in students)
+        //        {
+        //            AllStudents.Add(s);
+        //        }
+        //    }
+        //}
         public void getTasks()
         {
-            using (var db = new AppDbContext())
+            try
             {
-                var tasks = db.UserTaskAssignments
-                    .Include(t => t.User)
-                    .Include(t => t.TaskModel)
-                    .AsNoTracking()
-                    .ToList();
-
-                App.Current.Dispatcher.Invoke(() =>
+                using (var db = new AppDbContext())
                 {
-                    AllTasks.Clear();
-                    foreach (var t in tasks)
-                    {
-                        AllTasks.Add(t);
-                    }
-                });
-                //MessageBox.Show($"Loaded {AllTasks.Count} tasks!");
+                    var tasks = db.UserTaskAssignments
+                        .Include(t => t.User)
+                        .Include(t => t.TaskModel)
+                        .AsNoTracking()
+                        .ToList();
 
+                    App.Current.Dispatcher.Invoke(() =>
+                    {
+                        AllTasks.Clear();
+                        foreach (var t in tasks)
+                        {
+                            AllTasks.Add(t);
+                        }
+                    });
+                    //MessageBox.Show($"Loaded {AllTasks.Count} tasks!");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading tasks: {ex.Message}");
+                return;
             }
         }
 
         public void DeleteUser(int userId)
         {
-            using (var db = new Data.AppDbContext())
+            try
             {
-                var user = db.Users.Find(userId);
-                if (user != null)
+                using (var db = new Data.AppDbContext())
                 {
-                    // 1. Remove assignments first to avoid Foreign Key errors
-                    var assignments = db.UserTaskAssignments.Where(a => a.UserId == userId);
-                    db.UserTaskAssignments.RemoveRange(assignments);
-
-                    // 2. Remove the user
-                    db.Users.Remove(user);
-                    db.SaveChanges();
-
-                    // 3. Update the UI Collection correctly
-                    App.Current.Dispatcher.Invoke(() =>
+                    var user = db.Users.Find(userId);
+                    if (user != null)
                     {
-                        // Find the exact object instance currently in the list by its ID
-                        var userInList = AllStudents.FirstOrDefault(u => u.Id == userId);
-                        if (userInList != null)
+                        // 1. Remove assignments first to avoid Foreign Key errors
+                        var assignments = db.UserTaskAssignments.Where(a => a.UserId == userId);
+                        db.UserTaskAssignments.RemoveRange(assignments);
+
+                        // 2. Remove the user
+                        db.Users.Remove(user);
+                        db.SaveChanges();
+
+                        // 3. Update the UI Collection correctly
+                        App.Current.Dispatcher.Invoke(() =>
                         {
-                            AllStudents.Remove(userInList);
-                        }
-                    });
+                            // Find the exact object instance currently in the list by its ID
+                            var userInList = AllStudents.FirstOrDefault(u => u.Id == userId);
+                            if (userInList != null)
+                            {
+                                AllStudents.Remove(userInList);
+                            }
+                        });
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error deleting user: {ex.Message}");
+                return;
             }
             TopUsers.Clear();
             LoadTopUsers();
@@ -186,103 +224,140 @@ namespace TaskManagerApp.ViewModels
                     return;
             }
             newTask.PointValue = pointValue;
-            using (var db = new Data.AppDbContext())
+            try
             {
-                db.Tasks.Add(newTask);
-                db.SaveChanges();
+                using (var db = new Data.AppDbContext())
+                {
+                    db.Tasks.Add(newTask);
+                    db.SaveChanges();
+                }
+            } catch (Exception ex) {
+                MessageBox.Show($"Error creating task: {ex.Message}");
+                return;
             }
+                                
         }
 
-       
+
 
         public void AssignTaskToUser(int taskId, int userId)
         {
-            using (var db = new Data.AppDbContext())
+            try
             {
-                var task = db.Tasks.Find(taskId);
-                var user = db.Users.Find(userId);
-                if (task != null && user != null)
+                using (var db = new Data.AppDbContext())
                 {
-                    var newAssignment = new UserTaskAssignment
+                    var task = db.Tasks.Find(taskId);
+                    var user = db.Users.Find(userId);
+                    if (task != null && user != null)
                     {
-                        UserId = userId,
-                        TaskId = taskId,
-                        AssignedDate = DateTime.Now,
-                        IsCompleted = false,
-                        User = db.Users.Find(userId),
-                        TaskModel = db.Tasks.Find(taskId)
-                    };
-                    db.UserTaskAssignments.Add(newAssignment);
-                    db.SaveChanges();
-                    AllTasks.Add(newAssignment);
+                        var newAssignment = new UserTaskAssignment
+                        {
+                            UserId = userId,
+                            TaskId = taskId,
+                            AssignedDate = DateTime.Now,
+                            IsCompleted = false,
+                            User = db.Users.Find(userId),
+                            TaskModel = db.Tasks.Find(taskId)
+                        };
+                        db.UserTaskAssignments.Add(newAssignment);
+                        db.SaveChanges();
+                        AllTasks.Add(newAssignment);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error assigning task: {ex.Message}");
+                return;
             }
         }
 
         public void DeleteTask(int taskId, int studentId)
         {
-            using (var db = new Data.AppDbContext())
-            {
-                var assignment = db.UserTaskAssignments.FirstOrDefault(t => t.TaskId == taskId && t.UserId == studentId);
-                db.UserTaskAssignments.Remove(assignment);
-
-                bool isOnlyAssignment = db.UserTaskAssignments.Any(t => t.TaskId == taskId && t.UserId != studentId);
-                if (!isOnlyAssignment)
+            try
+           {
+                using (var db = new Data.AppDbContext())
                 {
-                    var taskToRemove = db.Tasks.Find(taskId);
-                    if(taskToRemove != null) db.Tasks.Remove(taskToRemove);
+                    var assignment = db.UserTaskAssignments.FirstOrDefault(t => t.TaskId == taskId && t.UserId == studentId);
+                    db.UserTaskAssignments.Remove(assignment);
 
+                    bool isOnlyAssignment = db.UserTaskAssignments.Any(t => t.TaskId == taskId && t.UserId != studentId);
+                    if (!isOnlyAssignment)
+                    {
+                        var taskToRemove = db.Tasks.Find(taskId);
+                        if (taskToRemove != null) db.Tasks.Remove(taskToRemove);
+
+                    }
+                    db.SaveChanges();
                 }
-                db.SaveChanges();
+            }catch (Exception ex)
+            {
+                MessageBox.Show($"Error deleting task: {ex.Message}");
+                return;
             }
             getTasks();
         }
 
-  
+
 
 
         public void LoadTopUsers()
         {
-            using (var db = new Data.AppDbContext())
+            try
             {
-                var topUsers = db.Users
-                    .Where(u => u.Role == UserRoles.Student)
-                    .OrderByDescending(u => u.TotalPoints)
-                    .Take(5)
-                    .ToList();
-
-                App.Current.Dispatcher.Invoke(() =>
+                using (var db = new Data.AppDbContext())
                 {
-                    TopUsers.Clear();
-                    foreach (var u in topUsers)
+                    var topUsers = db.Users
+                        .Where(u => u.Role == UserRoles.Student)
+                        .OrderByDescending(u => u.TotalPoints)
+                        .Take(5)
+                        .ToList();
+
+                    App.Current.Dispatcher.Invoke(() =>
                     {
-                        TopUsers.Add(u);
-                    }
-                });
+                        TopUsers.Clear();
+                        foreach (var u in topUsers)
+                        {
+                            TopUsers.Add(u);
+                        }
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading top users: {ex.Message}");
+                
             }
         }
 
         public void ApproveTask(int taskId, int studentId)
         {
-            using (var db = new Data.AppDbContext())
+            try
             {
-                var assignment = db.UserTaskAssignments
-                    .Include(a => a.TaskModel)
-                    .FirstOrDefault(t => t.TaskId == taskId && t.UserId == studentId);
-
-                if (assignment == null) return;
-
-                var user = db.Users.Find(assignment.UserId);
-                if (user != null)
+                using (var db = new Data.AppDbContext())
                 {
-                    user.TotalPoints += assignment.TaskModel.PointValue;
-                }
-                DeleteTask(taskId, studentId);
-                db.SaveChanges();
+                    var assignment = db.UserTaskAssignments
+                        .Include(a => a.TaskModel)
+                        .FirstOrDefault(t => t.TaskId == taskId && t.UserId == studentId);
 
-                getTasks();
-                LoadTopUsers();
+                    if (assignment == null) return;
+
+                    var user = db.Users.Find(assignment.UserId);
+                    if (user != null)
+                    {
+                        user.TotalPoints += assignment.TaskModel.PointValue;
+                    }
+                    DeleteTask(taskId, studentId);
+                    db.SaveChanges();
+                }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error approving task: {ex.Message}");
+                return;
+            }
+            getTasks();
+            LoadTopUsers();
         }
 
         

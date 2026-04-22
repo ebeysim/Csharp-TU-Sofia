@@ -29,37 +29,44 @@ namespace TaskManagerApp.ViewModels
         {
             if (string.IsNullOrEmpty(this.Username)) return;
 
-            using (var db = new AppDbContext())
+            try
             {
-               
-                var user = db.Users.FirstOrDefault(u => u.Username == this.Username);
-
-                if (user != null && BCrypt.Net.BCrypt.Verify(clearTextPassword, user.PasswordHash))
+                using (var db = new AppDbContext())
                 {
-                    
-                    if (user.Role == UserRoles.Admin)
+
+                    var user = db.Users.FirstOrDefault(u => u.Username == this.Username);
+
+                    if (user != null && BCrypt.Net.BCrypt.Verify(clearTextPassword, user.PasswordHash))
                     {
-                        var adminDashboard = new AdminDashboardView(user);
-                        adminDashboard.Show();
+
+                        if (user.Role == UserRoles.Admin)
+                        {
+                            var adminDashboard = new AdminDashboardView(user);
+                            adminDashboard.Show();
+                        }
+                        else
+                        {
+                            var userDashboard = new StudentTasksView(user);
+                            userDashboard.Show();
+                        }
+
+
+
+                        System.Windows.Application.Current.Windows
+                            .OfType<LoginView>()
+                            .FirstOrDefault()
+                            ?.Close();
                     }
                     else
                     {
-                        var userDashboard = new StudentTasksView(user);
-                        userDashboard.Show();
+                        ErrorMessage = "Invalid username or password.";
                     }
-
-
-                 
-                    System.Windows.Application.Current.Windows
-                        .OfType<LoginView>()
-                        .FirstOrDefault()
-                        ?.Close();
-                }
-                else
-                {
-                    ErrorMessage = "Invalid username or password.";
                 }
             }
+            catch (Exception ex) {
+                ErrorMessage = ex.Message;
+            }
+
         }
     }
 }
