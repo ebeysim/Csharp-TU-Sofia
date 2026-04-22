@@ -29,7 +29,6 @@ namespace TaskManagerApp.ViewModels
 
                 if (SetProperty(ref _selectedFilter, value))
                 {
-                    // IMPORTANT: Refresh the filter when the dropdown changes
                     TaskView?.Refresh();
                 }
             }
@@ -165,6 +164,8 @@ namespace TaskManagerApp.ViewModels
                     });
                 }
             }
+            TopUsers.Clear();
+            LoadTopUsers();
         }
 
         public void CreateTask(Models.Task newTask)

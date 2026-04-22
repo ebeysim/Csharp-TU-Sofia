@@ -30,8 +30,6 @@ namespace TaskManagerApp.Views
         private void SaveTask_Click(object sender, RoutedEventArgs e)
         {
             
-            // 1. Get the list of Users that have their checkbox checked
-            // We cast them to 'User' because that is what's inside the AllUsers collection
             var selectedStudents = UserSelectionList.SelectedItems.Cast<User>().ToList();
 
             if (selectedStudents.Count == 0)
@@ -40,7 +38,6 @@ namespace TaskManagerApp.Views
                 return;
             }
 
-            // 2. Determine Points (based on your priority logic)
             string priorityStr = ((ComboBoxItem)PriorityCombo.SelectedItem).Content.ToString();
             Priority selectedPriority = (Priority)Enum.Parse(typeof(Priority), priorityStr);
             var newTask = new Models.Task

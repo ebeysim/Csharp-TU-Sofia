@@ -26,6 +26,11 @@ namespace TaskManagerApp.Views
                 TaskOverlay.Visibility = Visibility.Collapsed;
 
             };
+            CreateDeleteUsersPopup.OnClose += () =>
+            {
+                DeleteUserOverlay.Visibility = Visibility.Collapsed;
+            };
+
             var vm = (AdminViewModel)this.DataContext;
             vm.getTasks();
 
@@ -41,6 +46,13 @@ namespace TaskManagerApp.Views
             vm.getStudents();
             TaskOverlay.Visibility = Visibility.Visible;
         }
+        private void OpenDeleteUsers_Click(object sender, RoutedEventArgs e)
+        {
+            var vm = (AdminViewModel)this.DataContext;
+            vm.getStudents();
+            DeleteUserOverlay.Visibility = Visibility.Visible;
+        }
+
         private void Logout_Click(object sender, RoutedEventArgs e)
         {
             var result = MessageBox.Show("Are you sure you want to logout?", "Logout",

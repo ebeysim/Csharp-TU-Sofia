@@ -12,7 +12,6 @@
         WindowStartupLocation="CenterScreen" Background="#F4F4F9">
 
     <Window.Resources>
-        <BooleanToVisibilityConverter x:Key="NullToVisibilityConverter"/>
         <converters:PriorityToColorConverter x:Key="PriorityToColorConverter"/>
     </Window.Resources>
 
@@ -49,6 +48,7 @@
 
                 <Button Content="Create Users" Click="OpenCreateUser_Click" Margin="0,5" Height="30" Cursor="Hand"/>
                 <Button Content="Create Task" Click="OpenCreateTask_Click" Margin="0,5" Height="30" Cursor="Hand"/>
+                <Button Content="Delete Users" Click="OpenDeleteUsers_Click" Margin="0,5" Height="30" Cursor="Hand"/>
                 <Button Content="Logout" Click="Logout_Click" Margin="0,50,0,0" Background="#E74C3C" Foreground="White" BorderThickness="0"/>
             </StackPanel>
         </Border>
@@ -56,7 +56,8 @@
         <!-- 2. TASK LIST (The "Master" part) -->
         <Grid Grid.Column="1" Background="White">
             <ListView ItemsSource="{Binding TaskView}" 
-                      SelectedItem="{Binding SelectedTask}"
+                      SelectedItem="{Binding SelectedTask, Mode=TwoWay}"
+                      SelectionMode="Single"
                       BorderThickness="0" Margin="5">
                 <ListView.ItemTemplate>
                     <DataTemplate>
@@ -73,7 +74,7 @@
         <!-- 3. DETAILS PANE (The "Detail" part) -->
         <Border Grid.Column="2" BorderBrush="#DCDDE1" BorderThickness="1,0" Padding="20">
             <!-- This section only shows its content if a task is selected -->
-            <Grid DataContext ="{Binding SelectedTask}"  Visibility="{Binding SelectedTask, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Collapsed}">
+            <Grid DataContext ="{Binding SelectedTask}">
                 <StackPanel>
                     <TextBlock Text="Task Review" FontSize="20" FontWeight="Bold" Margin="0,0,0,10"/>
                     <Separator/>
@@ -145,6 +146,20 @@
             </Grid.RowDefinitions>
             <Border Background="Black" Opacity="0.6"/>
             <local:CreateTaskView x:Name="CreateTaskPopup"
+                Grid.Row="0"
+                Width="543"
+                Height="555"
+                VerticalAlignment="Center" 
+                HorizontalAlignment="Center"/>
+        </Grid>
+        
+        <!--Delete Users Popup-->
+        <Grid x:Name="DeleteUserOverlay" Grid.ColumnSpan="4" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Border Background="Black" Opacity="0.6"/>
+            <local:DeleteUsersView x:Name="CreateDeleteUsersPopup"
                 Grid.Row="0"
                 Width="543"
                 Height="555"
